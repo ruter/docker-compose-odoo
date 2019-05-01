@@ -1,0 +1,49 @@
+version: '3.3'
+services:
+
+  postgres:
+    image: postgres:9.5
+    ports:
+      - 127.0.0.1:22700:5432
+    volumes:
+      - ./volumes/postgres:/var/lib/postgresql/data
+      - /etc/passwd:/etc/passwd:ro
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=6a6bf96d9d81792e8cdcabd232e39e27
+    user: $UID:$UID
+    restart: always
+
+  odoo10:
+    build: ./build/odoo10
+    command: start
+    ports:
+      - 127.0.0.1:23869:8069
+      - 127.0.0.1:23872:8072
+    links:
+      - postgres:db
+    volumes:
+      - ./volumes/odoo10/addons:/opt/odoo/additional_addons
+      - ./volumes/odoo10/filestore:/opt/odoo/data/filestore
+      - ./volumes/odoo10/sessions:/opt/odoo/data/sessions
+      - ./volumes/odoo10/ssh:/opt/odoo/ssh:ro
+    env_file:
+      - ./env/odoo10.env
+    restart: always
+
+  odoo12:
+    build: ./build/odoo12
+    command: start
+    ports:
+      - 127.0.0.1:22869:8069
+      - 127.0.0.1:22872:8072
+    links:
+      - postgres:db
+    volumes:
+      - ./volumes/odoo12/addons:/opt/odoo/additional_addons
+      - ./volumes/odoo12/filestore:/opt/odoo/data/filestore
+      - ./volumes/odoo12/sessions:/opt/odoo/data/sessions
+      - ./volumes/odoo12/ssh:/opt/odoo/ssh:ro
+    env_file:
+      - ./env/odoo12.env
+    restart: always
